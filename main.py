@@ -1,7 +1,9 @@
 from sqlmodel import SQLModel, Field, create_engine, Session, select
 
 from src.courses.bally_haly import fetch_bally_tee_times, scrape_bally_tee_times
+from src.courses.glendenning import fetch_glendenning_tee_times, scrape_glendenning_tee_times
 from src.courses.pippy_park import fetch_pippy_tee_times, scrape_pippy_tee_times
+from src.courses.wilds import fetch_wilds_tee_times, scrape_wilds_tee_times
 
 from src.models import Course, TeeTime
 
@@ -14,6 +16,8 @@ COURSES = [
     Course(value="GC002", label="Executive-NORTH", resort="Bally Haly"),
     Course(value="Admirals Green", label="ADMIRALS_GREEN", resort="Pippy Park"),
     Course(value="Captains Hill", label="CAPTAINS_HILL", resort="Pippy Park"),
+    Course(value="Glendenning", label="GLEDENNING", resort="Glendenning"),
+    Course(value="The Wilds", label="The Wilds", resort="The Wilds"),
 ]
 
 def aggregate_and_deduplicate_tee_times(results: list[TeeTime]) -> list[TeeTime]:
@@ -91,7 +95,8 @@ def main():
 
     bally_courses = get_courses_by_resort("Bally Haly")
     pippy_courses = get_courses_by_resort("Pippy Park")
-
+    glendenning_courses = get_courses_by_resort("Glendenning")
+    wilds_courses = get_courses_by_resort("The Wilds")
     for course in bally_courses:
         results = fetch_bally_tee_times("2025-05-23", course)
         tee_times = scrape_bally_tee_times(results, course, "2025-05-23")
@@ -101,6 +106,18 @@ def main():
     for course in pippy_courses:
         results = fetch_pippy_tee_times("2025-05-23", course)
         tee_times = scrape_pippy_tee_times(results, course, "2025-05-23")
+        deduped_tee_times = aggregate_and_deduplicate_tee_times(tee_times)
+        insert_tee_times(deduped_tee_times)
+
+    for course in glendenning_courses:
+        results = fetch_glendenning_tee_times("2025-05-23", course)
+        tee_times = scrape_glendenning_tee_times(results, course, "2025-05-23")
+        deduped_tee_times = aggregate_and_deduplicate_tee_times(tee_times)
+        insert_tee_times(deduped_tee_times)
+
+    for course in wilds_courses:
+        results = fetch_wilds_tee_times("2025-05-23", course)
+        tee_times = scrape_wilds_tee_times(results, course, "2025-05-23")
         deduped_tee_times = aggregate_and_deduplicate_tee_times(tee_times)
         insert_tee_times(deduped_tee_times)
 

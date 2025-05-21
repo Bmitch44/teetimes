@@ -1,7 +1,7 @@
 """
 Bally Haly Golf Club
 """
-
+import time as t
 from selectolax.parser import HTMLParser
 from playwright.sync_api import sync_playwright
 import datetime
@@ -10,6 +10,7 @@ from src.models.course import Course
 from src.models.tee_time import TeeTime
 
 def scrape_bally_tee_times(htmls, course: Course, date: str):
+    start_time = t.time()
     print(f"Scraping tee times for {course.label} on {date}")
     tee_times = []
     for html in htmls:
@@ -53,9 +54,12 @@ def scrape_bally_tee_times(htmls, course: Course, date: str):
             )
             tee_times.append(tee_time)
 
+    end_time = t.time()
+    print(f"Time taken: {end_time - start_time:.2f} seconds\n")
     return tee_times
 
 def fetch_bally_tee_times(date_str, course: Course):
+    start_time = t.time()
     print(f"Fetching tee times for {course.label} on {date_str}")
     url = "https://ballyhalygolf.totaleintegrated.com/Public-Tee-Times"
     search_times = [
@@ -63,7 +67,7 @@ def fetch_bally_tee_times(date_str, course: Course):
     ]
     results = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(url)
 
@@ -92,4 +96,6 @@ def fetch_bally_tee_times(date_str, course: Course):
             results.append(html)
 
         browser.close()
+    end_time = t.time()
+    print(f"Time taken: {end_time - start_time:.2f} seconds\n")
     return results

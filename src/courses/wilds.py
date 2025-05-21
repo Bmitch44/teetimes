@@ -7,11 +7,12 @@ from src.models.course import Course
 from src.models.tee_time import TeeTime
 
 
-def scrape_pippy_tee_times(html, course: Course, date: str) -> list[TeeTime]:
+def scrape_wilds_tee_times(html, course: Course, date: str) -> list[TeeTime]:
     start_time = t.time()
     print(f"Scraping tee times for {course.label} on {date}")
     tree = HTMLParser(html)
     parent = tree.css_first('div.search-results-tee-times-wrapper')
+
     if not parent:
         return []
 
@@ -40,31 +41,24 @@ def scrape_pippy_tee_times(html, course: Course, date: str) -> list[TeeTime]:
     print(f"Time taken: {end_time - start_time:.2f} seconds\n")
     return tee_times
 
-def fetch_pippy_tee_times(date_str, course: Course):
+def fetch_wilds_tee_times(date_str, course: Course):
     start_time = t.time()
     print(f"Fetching tee times for {course.label} on {date_str}")
-    COURSES = {
-        "ADMIRALS_GREEN": "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11757&CourseCode=ADMI&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com",
-        "CAPTAINS_HILL": "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11758&CourseCode=CAPT&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com"
-    }
+    url = "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseCode=SMRV&Referrer=thewilds.ca"
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         page = browser.new_page()
-        page.goto(COURSES[course.label])
+        page.goto(url)
         page.wait_for_timeout(2000)
-
-        if course.label == "ADMIRALS_GREEN":
-            page.click('a#popupMessagesClose')
-            page.wait_for_timeout(4000)
 
         page.click(f'a.search-results-date[id="{date_str}"]')
         page.wait_for_timeout(2000)
 
-        if course.label == "ADMIRALS_GREEN":
-            page.click('a#popupMessagesClose')
-            page.wait_for_timeout(2000)
+        page.click('a#hole-filter-18')
+        page.wait_for_timeout(2000)
 
         end_time = t.time()
         print(f"Time taken: {end_time - start_time:.2f} seconds\n")
         return page.content()
+
