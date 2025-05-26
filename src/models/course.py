@@ -12,5 +12,7 @@ class Course(SQLModel, table=True):
     value: str
     label: str = Field(unique=True)
     resort: str
+    holes: int
+    url: str
 
     tee_times: list["TeeTime"] = Relationship(back_populates="course")

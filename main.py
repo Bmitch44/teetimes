@@ -12,12 +12,14 @@ engine = create_engine("sqlite:///teetimes.db")
 SQLModel.metadata.create_all(engine)
 
 COURSES = [
-    Course(value="GC001", label="Championship-SOUTH", resort="Bally Haly"),
-    Course(value="GC002", label="Executive-NORTH", resort="Bally Haly"),
-    Course(value="Admirals Green", label="ADMIRALS_GREEN", resort="Pippy Park"),
-    Course(value="Captains Hill", label="CAPTAINS_HILL", resort="Pippy Park"),
-    Course(value="Glendenning", label="GLEDENNING", resort="Glendenning"),
-    Course(value="The Wilds", label="The Wilds", resort="The Wilds"),
+    Course(value="Championship SOUTH", label="Championship-SOUTH", resort="Bally Haly", holes=18, url="https://ballyhalygolf.totaleintegrated.com/Public-Tee-Times"),
+    Course(value="Executive NORTH", label="Executive-NORTH", resort="Bally Haly", holes=18, url="https://ballyhalygolf.totaleintegrated.com/Public-Tee-Times"),
+    Course(value="Admirals Green", label="ADMIRALS_GREEN", resort="Pippy Park", holes=18, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11757&CourseCode=ADMI&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com"),
+    Course(value="Admirals Green 9 Hole", label="ADMIRALS_GREEN_9", resort="Pippy Park", holes=9, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11757&CourseCode=ADMI&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com"),
+    Course(value="Captains Hill", label="CAPTAINS_HILL", resort="Pippy Park", holes=18, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11758&CourseCode=CAPT&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com"),
+    Course(value="Glendenning", label="GLEDENNING", resort="Glendenning", holes=18, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseCode=GGGG&Referrer="),
+    Course(value="The Wilds", label="THE_WILDS", resort="The Wilds", holes=18, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseCode=SMRV&Referrer=thewilds.ca"),
+    Course(value="The Wilds 9 Hole", label="THE_WILDS_9", resort="The Wilds", holes=9, url="https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseCode=SMRV&Referrer=thewilds.ca"),
 ]
 
 def aggregate_and_deduplicate_tee_times(results: list[TeeTime]) -> list[TeeTime]:
@@ -122,4 +124,8 @@ def main():
         insert_tee_times(deduped_tee_times)
 
 if __name__ == "__main__":
+    import time
+    start_time = time.time()
     main()
+    end_time = time.time()
+    print(f"\n\nTotal Time taken: {end_time - start_time:.2f} seconds\n")

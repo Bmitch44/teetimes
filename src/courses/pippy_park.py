@@ -33,7 +33,8 @@ def scrape_pippy_tee_times(html, course: Course, date: str) -> list[TeeTime]:
                     price=price,
                     players=int(players.split(" ")[-2]),
                     date=date,
-                    course_id=course.id
+                    course_id=course.id,
+                    holes=course.holes
                 )
             )
     end_time = t.time()
@@ -43,26 +44,26 @@ def scrape_pippy_tee_times(html, course: Course, date: str) -> list[TeeTime]:
 def fetch_pippy_tee_times(date_str, course: Course):
     start_time = t.time()
     print(f"Fetching tee times for {course.label} on {date_str}")
-    COURSES = {
-        "ADMIRALS_GREEN": "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11757&CourseCode=ADMI&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com",
-        "CAPTAINS_HILL": "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseGroupID=11758&CourseCode=CAPT&LoginType=5&BackTarget=com.teeon.teesheet.servlets.golfersection.ComboLanding&Referrer=www.pippypark.com"
-    }
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         page = browser.new_page()
-        page.goto(COURSES[course.label])
+        page.goto(course.url)
         page.wait_for_timeout(2000)
 
-        if course.label == "ADMIRALS_GREEN":
+        if course.label == "ADMIRALS_GREEN" or course.label == "ADMIRALS_GREEN_9":
             page.click('a#popupMessagesClose')
             page.wait_for_timeout(4000)
 
         page.click(f'a.search-results-date[id="{date_str}"]')
         page.wait_for_timeout(2000)
 
-        if course.label == "ADMIRALS_GREEN":
+        if course.label == "ADMIRALS_GREEN" or course.label == "ADMIRALS_GREEN_9":
             page.click('a#popupMessagesClose')
+            page.wait_for_timeout(2000)
+
+        if course.label == "ADMIRALS_GREEN_9" or course.label == "CAPTAINS_HILL":
+            page.click('a#hole-filter-9')
             page.wait_for_timeout(2000)
 
         end_time = t.time()

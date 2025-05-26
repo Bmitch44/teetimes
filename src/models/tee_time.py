@@ -17,6 +17,7 @@ class TeeTime(SQLModel, table=True):
     date: str
     players: int
     price: str
+    holes: int
 
     course: "Course" = Relationship(back_populates="tee_times")
     __table_args__ = (UniqueConstraint("course_id", "time", "date"),)

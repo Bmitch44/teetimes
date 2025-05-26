@@ -34,7 +34,8 @@ def scrape_glendenning_tee_times(html, course: Course, date: str) -> list[TeeTim
                     price=price,
                     players=int(players.split(" ")[-2]),
                     date=date,
-                    course_id=course.id
+                    course_id=course.id,
+                    holes=course.holes
                 )
             )
     end_time = t.time()

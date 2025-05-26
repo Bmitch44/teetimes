@@ -34,7 +34,8 @@ def scrape_wilds_tee_times(html, course: Course, date: str) -> list[TeeTime]:
                     price=price,
                     players=int(players.split(" ")[-2]),
                     date=date,
-                    course_id=course.id
+                    course_id=course.id,
+                    holes=course.holes
                 )
             )
     end_time = t.time()
@@ -44,12 +45,11 @@ def scrape_wilds_tee_times(html, course: Course, date: str) -> list[TeeTime]:
 def fetch_wilds_tee_times(date_str, course: Course):
     start_time = t.time()
     print(f"Fetching tee times for {course.label} on {date_str}")
-    url = "https://www.tee-on.com/PubGolf/servlet/com.teeon.teesheet.servlets.golfersection.WebBookingAllTimesLanding?CourseCode=SMRV&Referrer=thewilds.ca"
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         page = browser.new_page()
-        page.goto(url)
+        page.goto(course.url)
         page.wait_for_timeout(2000)
 
         page.click(f'a.search-results-date[id="{date_str}"]')
@@ -57,6 +57,10 @@ def fetch_wilds_tee_times(date_str, course: Course):
 
         page.click('a#hole-filter-18')
         page.wait_for_timeout(2000)
+
+        if course.label == "THE_WILDS_9":
+            page.click('a#hole-filter-9')
+            page.wait_for_timeout(2000)
 
         end_time = t.time()
         print(f"Time taken: {end_time - start_time:.2f} seconds\n")

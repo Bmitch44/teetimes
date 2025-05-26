@@ -50,7 +50,8 @@ def scrape_bally_tee_times(htmls, course: Course, date: str):
                 time=time,
                 course_id=course.id,
                 price=price.split("/")[0],
-                players=players
+                players=players,
+                holes=course.holes
             )
             tee_times.append(tee_time)
 
