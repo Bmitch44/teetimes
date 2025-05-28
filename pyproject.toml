@@ -9,4 +9,12 @@ dependencies = [
     "playwright>=1.52.0",
     "selectolax>=0.3.29",
     "sqlmodel>=0.0.24",
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
 ]
